@@ -1,6 +1,7 @@
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import { Terminal, TerminalLine } from "../Terminal";
 import { VaporwaveBackground } from "../VaporwaveBackground";
+import { SceneProgressBar } from "../components/SceneProgressBar";
 
 const MIGRATION_LINES: TerminalLine[] = [
   {
@@ -74,6 +75,7 @@ export const TerminalMigrationScene = () => {
         >
           <Terminal lines={MIGRATION_LINES} fontSize={66} promptWidth={520} />
         </div>
+        <SceneProgressBar />
       </AbsoluteFill>
     </AbsoluteFill>
   );

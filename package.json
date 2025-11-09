@@ -27,7 +27,12 @@
     "upgrade": "remotion upgrade",
     "remotion": "remotion",
     "preview": "remotion preview",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+    "docker:build": "docker build -t remotion-nixos .",
+    "docker:preview": "npm run docker:build && docker run --rm -it -p 3001:3001 -v $PWD/out:/usr/src/app/out remotion-nixos",
+    "docker:preview:live": "npm run docker:build && docker run --rm -it -p 3001:3001 -v $PWD:/usr/src/app -v $PWD/out:/usr/src/app/out remotion-nixos npm run dev",
+    "docker:render": "npm run docker:build && docker run --rm -v $PWD/out:/usr/src/app/out remotion-nixos npx remotion render",
+    "startall": "docker image prune -f && docker builder prune -f && npm run docker:preview:live"
   },
   "sideEffects": [
     "*.css"

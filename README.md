@@ -31,6 +31,30 @@ npm run dev
 npx remotion render
 ```
 
+### Dockerized workflow (recommended on NixOS)
+
+Remotion’s Chromium build expects an FHS-compliant Linux distribution.  
+Use the provided Docker image to run previews and renders inside Debian:
+
+```console
+# Build the image (cached, re-run when dependencies change)
+npm run docker:build
+
+# Start the Studio/preview server on http://localhost:3001 inside the container
+npm run docker:preview
+
+# Render a composition (writes to ./out on the host)
+npm run docker:render -- MyComp out/video.mp4
+```
+
+Both commands share the `./out` directory with the host, so rendered files appear locally.  
+To run an arbitrary command inside the container:
+
+```console
+docker run --rm -it -v "$PWD":/usr/src/app -p 3001:3001 remotion-nixos \
+  bash -lc "npm run lint && npx remotion render MyComp out/video.mp4"
+```
+
 **Upgrade Remotion**
 
 ```console

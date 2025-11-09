@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { interpolate, useCurrentFrame } from "remotion";
 
 export type FileNode = {
@@ -8,10 +7,15 @@ export type FileNode = {
   children?: FileNode[];
 };
 
+type PanelSection =
+  | { type: "tree"; nodes: FileNode[] }
+  | { type: "list"; title: string; bullets: string[] };
+
 type VaporwaveInfoPanelProps = {
   title: string;
-  tree: FileNode[];
-  metaLines?: string[];
+  sections: PanelSection[];
+  subtitle?: string;
+  activeSectionIndex?: number;
 };
 
 const COLORS = ["#ff5da2", "#8afff7", "#ffd580", "#bd9bff"];
@@ -143,14 +147,83 @@ const TreeNode: React.FC<{
   );
 };
 
+const renderSection = (
+  section: PanelSection,
+  helpers: { float: number }
+) => {
+  if (section.type === "tree") {
+    return (
+      <div
+        style={{
+          flex: 1,
+          overflow: "auto",
+          paddingRight: 12,
+          transform: `translateY(${helpers.float}px)`,
+        }}
+      >
+        {section.nodes.map((node, index) => (
+          <TreeNode key={node.label} node={node} depth={0} index={index} />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 18,
+      }}
+    >
+      <p
+        style={{
+          margin: 0,
+          fontSize: "clamp(30px, 3vw, 56px)",
+          fontWeight: 600,
+          color: "#ffd8ff",
+        }}
+      >
+        {section.title}
+      </p>
+      {section.bullets.map((line, index) => (
+        <div
+          key={line}
+          style={{
+            display: "flex",
+            gap: 20,
+            alignItems: "flex-start",
+            fontSize: "clamp(22px, 2.4vw, 38px)",
+            color: "#eef1ff",
+            lineHeight: 1.4,
+          }}
+        >
+          <span
+            style={{
+              width: 16,
+              height: 16,
+              borderRadius: "50%",
+              background: COLORS[index % COLORS.length],
+              boxShadow: `0 0 12px ${COLORS[index % COLORS.length]}66`,
+              marginTop: 12,
+            }}
+          />
+          <span style={{ flex: 1 }}>{line}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export const VaporwaveInfoPanel: React.FC<VaporwaveInfoPanelProps> = ({
   title,
-  tree,
-  metaLines = [],
+  sections,
+  subtitle = "curated dotfiles vault",
+  activeSectionIndex = 0,
 }) => {
   const frame = useCurrentFrame();
   const float = Math.sin(frame / 40) * 6;
-  const memoizedTree = useMemo(() => tree, [tree]);
+  const activeSection = sections[activeSectionIndex] ?? sections[0];
 
   return (
     <div
@@ -184,121 +257,18 @@ export const VaporwaveInfoPanel: React.FC<VaporwaveInfoPanelProps> = ({
         <p
           style={{
             marginTop: 10,
-            fontSize: "clamp(18px, 1.6vw, 32px)",
+            fontSize: "clamp(22px, 2vw, 34px)",
             color: "#b9c7ff",
-            letterSpacing: 6,
+            letterSpacing: 4,
             textTransform: "uppercase",
           }}
         >
-          curated dotfiles vault
+          {subtitle}
         </p>
       </GlassShell>
-      <div
-        style={{
-          display: "flex",
-          gap: 32,
-          flex: 1,
-          minHeight: 0,
-        }}
-      >
-        <GlassShell
-          style={{
-            flex: 1.3,
-            display: "flex",
-            flexDirection: "column",
-            minHeight: 0,
-          }}
-        >
-          <div
-            style={{
-              flex: 1,
-              overflow: "auto",
-              paddingRight: 12,
-              transform: `translateY(${float}px)`,
-            }}
-          >
-            {memoizedTree.map((node, index) => (
-              <TreeNode key={node.label} node={node} depth={0} index={index} />
-            ))}
-          </div>
-        </GlassShell>
-        <GlassShell
-          style={{
-            flex: 0.7,
-            display: "flex",
-            flexDirection: "column",
-            gap: 20,
-            justifyContent: "space-between",
-          }}
-        >
-          <div>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "clamp(26px, 2.4vw, 46px)",
-                fontWeight: 600,
-                color: "#ffd8ff",
-              }}
-            >
-              Drop facts
-            </p>
-            <span
-              style={{
-                display: "inline-block",
-                marginTop: 6,
-                fontSize: "clamp(16px, 1.2vw, 22px)",
-                color: "rgba(255,255,255,0.65)",
-                letterSpacing: 4,
-                textTransform: "uppercase",
-              }}
-            >
-              build context
-            </span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 18,
-            }}
-          >
-            {metaLines.map((line, index) => (
-              <div
-                key={line}
-                style={{
-                  display: "flex",
-                  gap: 16,
-                  alignItems: "flex-start",
-                  fontSize: "clamp(18px, 1.7vw, 30px)",
-                  color: "#eef1ff",
-                  lineHeight: 1.3,
-                }}
-              >
-                <span
-                  style={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: "50%",
-                    background: COLORS[index % COLORS.length],
-                    boxShadow: `0 0 12px ${COLORS[index % COLORS.length]}66`,
-                    marginTop: 8,
-                  }}
-                />
-                <span style={{ flex: 1 }}>{line}</span>
-              </div>
-            ))}
-          </div>
-          <div
-            style={{
-              fontSize: "clamp(16px, 1.1vw, 22px)",
-              color: "rgba(255,255,255,0.6)",
-              letterSpacing: 2,
-            }}
-          >
-            rendered via remotion · nixos presets synced hourly
-          </div>
-        </GlassShell>
-      </div>
+      <GlassShell style={{ flex: 1, minHeight: 0 }}>
+        {renderSection(activeSection, { float })}
+      </GlassShell>
     </div>
   );
 };

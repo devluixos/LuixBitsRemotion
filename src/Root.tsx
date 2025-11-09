@@ -1,28 +1,13 @@
 import "./index.css";
 import { Composition } from "remotion";
-import { TerminalScene } from "./scenes/TerminalScene";
-import { InfoScene } from "./scenes/InfoScene";
 import { TerminalMigrationScene } from "./scenes/TerminalMigrationScene";
+import { FlakeInfoScene } from "./scenes/FlakeInfoScene";
+import { SystemConfigScene } from "./scenes/SystemConfigScene";
+import { HomeManagerScene } from "./scenes/HomeManagerScene";
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
-      <Composition
-        id="TerminalScene"
-        component={TerminalScene}
-        durationInFrames={540}
-        fps={30}
-        width={3440}
-        height={1440}
-      />
-      <Composition
-        id="InfoScene"
-        component={InfoScene}
-        durationInFrames={360}
-        fps={30}
-        width={3440}
-        height={1440}
-      />
       <Composition
         id="TerminalMigrationScene"
         component={TerminalMigrationScene}
@@ -31,7 +16,30 @@ export const RemotionRoot: React.FC = () => {
         width={3440}
         height={1440}
       />
+      <Composition
+        id="FlakeInfoScene"
+        component={FlakeInfoScene}
+        durationInFrames={900}
+        fps={30}
+        width={3440}
+        height={1440}
+      />
+      <Composition
+        id="SystemConfigScene"
+        component={SystemConfigScene}
+        durationInFrames={1530}
+        fps={30}
+        width={3440}
+        height={1440}
+      />
+      <Composition
+        id="HomeManagerScene"
+        component={HomeManagerScene}
+        durationInFrames={1200}
+        fps={30}
+        width={3440}
+        height={1440}
+      />
     </>
   );
 };
-
