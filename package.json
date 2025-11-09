@@ -25,6 +25,8 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
+    "remotion": "remotion",
+    "preview": "remotion preview",
     "lint": "eslint src && tsc"
   },
   "sideEffects": [
