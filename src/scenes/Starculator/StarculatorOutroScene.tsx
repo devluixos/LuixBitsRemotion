@@ -1,8 +1,8 @@
 import type { ComponentType } from "react";
-import { useMemo } from "react";
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { DockerOriginal, NixosOriginal, SvelteOriginal } from "devicons-react";
 import { SceneProgressBar } from "../../components/SceneProgressBar";
+import { StarField } from "../../components/StarField";
 import { GlassCard } from "../../components/GlassCard";
 
 const OUTRO_DURATION_FRAMES = 8 * 30; // 8s @30fps
@@ -67,51 +67,6 @@ const PILLS: Pill[] = [
     tint: "#ff5c2c",
   },
 ];
-
-type Star = { x: number; y: number; size: number; speed: number; phase: number };
-
-const StarField: React.FC<{ opacity?: number }> = ({ opacity = 1 }) => {
-  const frame = useCurrentFrame();
-  const stars = useMemo<Star[]>(
-    () =>
-      Array.from({ length: 140 }, (_, i) => {
-        const seed = Math.sin(i * 37.7 + 3.14);
-        return {
-          x: ((seed * 1000) % 100 + 100) % 100,
-          y: ((seed * 700) % 100 + 100) % 100,
-          size: 1 + ((seed * 13) % 2.6),
-          speed: 0.05 + ((seed * 17) % 0.08),
-          phase: ((seed * 11) % 1) * Math.PI * 2,
-        };
-      }),
-    [],
-  );
-
-  return (
-    <div style={{ position: "absolute", inset: 0, opacity }}>
-      {stars.map((star, idx) => {
-        const driftY = (star.y + frame * star.speed) % 100;
-        const twinkle = 0.5 + (Math.sin(frame / 12 + star.phase) + 1) * 0.25;
-        return (
-          <div
-            key={idx}
-            style={{
-              position: "absolute",
-              left: `${star.x}%`,
-              top: `${driftY}%`,
-              width: star.size,
-              height: star.size,
-              borderRadius: "50%",
-              background: "#e8f6ff",
-              filter: `drop-shadow(0 0 8px rgba(143,244,255,${twinkle}))`,
-              opacity: twinkle,
-            }}
-          />
-        );
-      })}
-    </div>
-  );
-};
 
 const PillCard: React.FC<{ pill: Pill; index: number; segment: number }> = ({
   pill,
@@ -201,7 +156,7 @@ export const StarculatorOutroScene = () => {
         fontFamily: "'Space Grotesk', 'Sora', sans-serif",
       }}
     >
-      <StarField opacity={0.8} />
+      <StarField opacity={0.8} variant="outro" />
       <div
         style={{
           position: "absolute",

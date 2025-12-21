@@ -10,59 +10,10 @@ import {
 } from "remotion";
 import { NixosOriginal, DockerOriginal, SvelteOriginal } from "devicons-react";
 import { SceneProgressBar } from "../../components/SceneProgressBar";
-
-type Star = {
-  x: number;
-  y: number;
-  size: number;
-  speed: number;
-  sparkle: number;
-};
+import { StarField } from "../../components/StarField";
 
 const backgroundGradient =
   "radial-gradient(circle at 20% 30%, rgba(78,255,228,0.12), transparent 35%), radial-gradient(circle at 80% 70%, rgba(255,93,162,0.18), transparent 40%), linear-gradient(135deg, #040610 0%, #06081a 60%, #03040a 100%)";
-
-const StarField: React.FC<{ opacity: number }> = ({ opacity }) => {
-  const frame = useCurrentFrame();
-
-  const stars = useMemo<Star[]>(() => {
-    return Array.from({ length: 120 }, (_, i) => {
-      const seed = Math.sin(i * 999);
-      return {
-        x: (seed * 1000) % 100,
-        y: ((seed * 7000) % 100 + 100) % 100,
-        size: 1.2 + ((seed * 13) % 2),
-        speed: 0.04 + ((seed * 7) % 0.08),
-        sparkle: 0.4 + ((seed * 5) % 0.4),
-      };
-    });
-  }, []);
-
-  return (
-    <div style={{ position: "absolute", inset: 0, opacity }}>
-      {stars.map((star, idx) => {
-        const y = (star.y + frame * star.speed) % 100;
-        const twinkle = interpolate(Math.sin((frame + idx * 8) / 10), [-1, 1], [0.35, 1]);
-        return (
-          <div
-            key={idx}
-            style={{
-              position: "absolute",
-              left: `${star.x}%`,
-              top: `${y}%`,
-              width: star.size,
-              height: star.size,
-              borderRadius: "50%",
-              background: "white",
-              filter: `drop-shadow(0 0 6px rgba(138,255,247,${star.sparkle * twinkle}))`,
-              opacity: 0.5 + star.sparkle * twinkle,
-            }}
-          />
-        );
-      })}
-    </div>
-  );
-};
 
 const NixosSequence: React.FC = () => {
   const frame = useCurrentFrame();
@@ -947,7 +898,7 @@ export const StarculatorTrailerScene: React.FC = () => {
         fontFamily: "'SF Pro Display', 'Inter', system-ui, -apple-system, sans-serif",
       }}
     >
-      <StarField opacity={starOpacity} />
+      <StarField opacity={starOpacity} variant="trailer" />
 
       <Sequence from={15} durationInFrames={75}>
         <div
