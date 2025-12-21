@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
-import { VaporwaveBackground } from "../VaporwaveBackground";
-import { GlassCard } from "../components/GlassCard";
-import { SplitPanel } from "../components/SplitPanel";
-import { TextInfoCard } from "../components/TextInfoCard";
-import { InfoMediaPanel } from "../components/InfoMediaPanel";
-import { SceneProgressBar } from "../components/SceneProgressBar";
-import { ModuleGrid } from "../components/ModuleGrid";
+import { VaporwaveBackground } from "../../VaporwaveBackground";
+import { GlassCard } from "../../components/GlassCard";
+import { SplitPanel } from "../../components/SplitPanel";
+import { TextInfoCard } from "../../components/TextInfoCard";
+import { InfoMediaPanel } from "../../components/InfoMediaPanel";
+import { SceneProgressBar } from "../../components/SceneProgressBar";
+import { ModuleGrid } from "../../components/ModuleGrid";
 
 const Highlight: React.FC<{ children: ReactNode }> = ({ children }) => (
   <span
@@ -26,64 +26,64 @@ const Highlight: React.FC<{ children: ReactNode }> = ({ children }) => (
 const BULLET_SEGMENTS: ReactNode[][] = [
   [
     <>
-      Enables <Highlight>nixpkgs.config.allowUnfree</Highlight> on the user scope
-      without touching the host.
+      <Highlight>home/luix/default.nix</Highlight> is the single entrypoint for
+      every user tweak.
     </>,
     <>
-      Pins <Highlight>home.username</Highlight>,{" "}
-      <Highlight>home.homeDirectory</Highlight>, and{" "}
-      <Highlight>home.stateVersion</Highlight> so generations are deterministic.
+      <Highlight>home.username</Highlight>, <Highlight>home.homeDirectory</Highlight>,
+      and <Highlight>stateVersion</Highlight> now live in Home Manager, not the host.
     </>,
     <>
-      Turns on <Highlight>xdg.enable</Highlight> and{" "}
-      <Highlight>fonts.fontconfig.enable</Highlight> to share cache + fonts with
-      the system.
+      <Highlight>allowUnfree</Highlight> flips on at the user layer so the flake stays clean.
     </>,
   ],
   [
     <>
-      Forces <Highlight>~/.nix-profile</Highlight> to symlink the Home Manager
-      generation, keeping user packages on <Highlight>PATH</Highlight> even
-      though <Highlight>/etc/nixos</Highlight> is no longer the source of truth.
+      <Highlight>xdg.enable</Highlight> + <Highlight>fonts.fontconfig.enable</Highlight>{" "}
+      make caches and fonts follow the user profile.
     </>,
     <>
-      Defines a curated <Highlight>imports</Highlight> list of reusable modules
-      for apps, CLI tooling, and theming.
+      <Highlight>~/.nix-profile</Highlight> is force-linked to each generation so apps stay on{" "}
+      <Highlight>PATH</Highlight>.
+    </>,
+    <>
+      <Highlight>targets.genericLinux</Highlight> keeps this same profile deployable on other hosts.
+    </>,
+    <>
+      The <Highlight>imports</Highlight> list fans out to reusable modules; hardware + services stay in{" "}
+      <Highlight>/etc/nixos</Highlight>.
+    </>,
+    <>
+      <Highlight>home.packages</Highlight> is reserved for user apps so{" "}
+      <Highlight>environment.systemPackages</Highlight> can stay tiny.
     </>,
   ],
 ];
 
 const SNIPPET_SEGMENTS = [
-  `{
-  nixpkgs = {
-    config.allowUnfree = true;
-  };
+  `nixpkgs.config.allowUnfree = true;
 
-  home.username = "luix";
-  home.homeDirectory = "/home/luix";
-  home.stateVersion = "25.05";
+home.username = "luix";
+home.homeDirectory = "/home/luix";
+home.stateVersion = "25.05";`,
+  `xdg.enable = true;
+fonts.fontconfig.enable = true;
 
-  xdg.enable = true;
-  fonts.fontconfig.enable = true;
-}`,
-  `  home.extraActivationPath = with pkgs; [ coreutils ];
-  targets.genericLinux.enable = true;
+home.profileDirectory = "~/.nix-profile";
+home.sessionPath = [ "~/.nix-profile/bin" ];
+targets.genericLinux.enable = true;
 
-  home.profileDirectory = "~/.nix-profile";
-  home.sessionPath = [ "~/.nix-profile/bin" ];
-
-  imports = [
-    ./modules/base.nix
-    ./modules/applications.nix
-    ./modules/cli.nix
-    ./modules/media.nix
-    ./modules/programming.nix
-    ./modules/kitty.nix
-    ./modules/nixvim.nix
-    ./modules/buildandpush.nix
-    ./modules/zsh.nix
-  ];
-}`,
+imports = [
+  ./modules/base.nix
+  ./modules/applications.nix
+  ./modules/cli.nix
+  ./modules/media.nix
+  ./modules/programming.nix
+  ./modules/kitty.nix
+  ./modules/nixvim.nix
+  ./modules/buildandpush.nix
+  ./modules/zsh.nix
+];`,
 ];
 
 const MODULES = [
@@ -98,19 +98,17 @@ const MODULES = [
   "zsh.nix",
 ];
 
-const SEGMENT_DURATION_FRAMES = [240, 240, 240, 240]; // 8s each (total 32s -> adjust composition to 960 frames if needed)
+const SEGMENT_DURATION_FRAMES = [360, 720, 300]; // 12s intro, 24s details, 10s modules
 
 export const HomeManagerScene = () => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
-
-  const total = SEGMENT_DURATION_FRAMES.reduce((sum, val) => sum + val, 0);
-  if (durationInFrames !== total) {
-    console.warn(
-      "HomeManagerScene duration mismatch, expected",
-      total,
-      "frames.",
-    );
+  const expectedDuration = SEGMENT_DURATION_FRAMES.reduce(
+    (sum, val) => sum + val,
+    0,
+  );
+  if (durationInFrames !== expectedDuration) {
+    console.warn("HomeManagerScene expects", expectedDuration, "frames.");
   }
 
   let accumulated = 0;
@@ -145,8 +143,16 @@ export const HomeManagerScene = () => {
           alignItems: "center",
         }}
       >
-        <div style={{ width: "100%", height: "90%", gap: 32, display: "flex", flexDirection: "column" }}>
-          {segmentIndex === 0 || segmentIndex === 1 ? (
+        <div
+          style={{
+            width: "100%",
+            height: "90%",
+            gap: 32,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {segmentIndex <= 1 ? (
             <div style={{ opacity: fade }}>
               <SplitPanel
                 gap={36}
@@ -171,19 +177,6 @@ export const HomeManagerScene = () => {
           ) : null}
 
           {segmentIndex === 2 ? (
-            <div style={{ opacity: fade }}>
-              <GlassCard>
-                <InfoMediaPanel
-                  content={{
-                    kind: "code",
-                    code: SNIPPET_SEGMENTS[1],
-                  }}
-                />
-              </GlassCard>
-            </div>
-          ) : null}
-
-          {segmentIndex === 3 ? (
             <div style={{ opacity: fade }}>
               <GlassCard
                 style={{

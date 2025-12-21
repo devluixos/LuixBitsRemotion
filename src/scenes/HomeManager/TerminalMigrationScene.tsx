@@ -1,7 +1,7 @@
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
-import { Terminal, TerminalLine } from "../Terminal";
-import { VaporwaveBackground } from "../VaporwaveBackground";
-import { SceneProgressBar } from "../components/SceneProgressBar";
+import { Terminal, TerminalLine } from "../../Terminal";
+import { VaporwaveBackground } from "../../VaporwaveBackground";
+import { SceneProgressBar } from "../../components/SceneProgressBar";
 
 const MIGRATION_LINES: TerminalLine[] = [
   {

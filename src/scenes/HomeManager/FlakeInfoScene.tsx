@@ -4,11 +4,11 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { VaporwaveBackground } from "../VaporwaveBackground";
-import { FileNode } from "../VaporwaveInfoPanel";
-import { GlassCard } from "../components/GlassCard";
-import { SplitPanel } from "../components/SplitPanel";
-import { SceneProgressBar } from "../components/SceneProgressBar";
+import { VaporwaveBackground } from "../../VaporwaveBackground";
+import { FileNode } from "../../VaporwaveInfoPanel";
+import { GlassCard } from "../../components/GlassCard";
+import { SplitPanel } from "../../components/SplitPanel";
+import { SceneProgressBar } from "../../components/SceneProgressBar";
 
 const FLAKE_TREE: FileNode[] = [
   {

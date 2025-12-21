@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import atopileScreenshot from "../assets/atopile.png";
-import { SceneProgressBar } from "../components/SceneProgressBar";
-import { TextInfoCard } from "../components/TextInfoCard";
-import { InfoMediaPanel, type InfoMediaContent } from "../components/InfoMediaPanel";
-import { GlassCard } from "../components/GlassCard";
-import { SplitPanel } from "../components/SplitPanel";
-import { VaporwaveBackground } from "../VaporwaveBackground";
+import atopileScreenshot from "../../assets/atopile.png";
+import { SceneProgressBar } from "../../components/SceneProgressBar";
+import { TextInfoCard } from "../../components/TextInfoCard";
+import { InfoMediaPanel, type InfoMediaContent } from "../../components/InfoMediaPanel";
+import { GlassCard } from "../../components/GlassCard";
+import { SplitPanel } from "../../components/SplitPanel";
+import { VaporwaveBackground } from "../../VaporwaveBackground";
 
 const SEGMENT_DURATIONS = [330, 510, 240, 450]; // 11s, 17s, 8s, 15s @30fps
 

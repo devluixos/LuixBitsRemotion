@@ -1,17 +1,22 @@
 {
-  "name": "nixos-home-manager",
+  "name": "LuixBitsRemotion",
   "version": "1.0.0",
   "description": "My Remotion video",
   "repository": {},
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@react-three/fiber": "9.0.0",
     "@remotion/cli": "4.0.373",
+    "@remotion/tailwind-v4": "4.0.373",
+    "@remotion/three": "4.0.373",
+    "devicons-react": "^1.5.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "remotion": "4.0.373",
-    "@remotion/tailwind-v4": "4.0.373",
-    "tailwindcss": "4.0.0"
+    "tailwindcss": "4.0.0",
+    "three": "^0.170.0",
+    "use-sync-external-store": "^1.6.0"
   },
   "devDependencies": {
     "@remotion/eslint-config-flat": "4.0.373",
