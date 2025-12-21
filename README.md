@@ -16,7 +16,6 @@
 ```
 
 Neon-first Remotion project to create scenes and clips for the LuixBits video universe.
-Modular compositions, vaporwave UI, and cinematic gradients drive the look.
 
 ## Project Outline
 
@@ -26,14 +25,6 @@ Modular compositions, vaporwave UI, and cinematic gradients drive the look.
 - Composition registry: `src/Root.tsx` pulls modules from `src/modules/`.
 - Scenes: animation work lives under `src/scenes/`.
 - UI blocks: reusable pieces live in `src/components/`.
-
-## Scene Modules (Compositions)
-
-- brand-intro: `LuixBitsCubeIntroScene`
-- day1-learnings: `Day1LearningsScene`
-- home-manager: `TerminalMigrationScene`, `FlakeInfoScene`, `SystemConfigScene`, `HomeManagerScene`, `ModulesScene`, `BringingItTogetherScene`, `ModulesShowcaseScene`, `KittyShowcaseScene`
-- nixvim: `NixvimBlockBuildScene`
-- starculator: `StarculatorTrailerScene`, `StarculatorOutroScene`
 
 ## Current Components
 
@@ -96,6 +87,12 @@ npm i
 npm run dev
 ```
 
+**Start all (NixOS-safe live preview)**
+
+```console
+npm run startall
+```
+
 **Render video**
 
 ```console
@@ -104,8 +101,22 @@ npx remotion render
 
 ### Dockerized workflow (recommended on NixOS)
 
-Remotion's Chromium build expects an FHS-compliant Linux distribution.
-Use the provided Docker image to run previews and renders inside Debian:
+Remotion's Chromium + bundled ffmpeg (MP4 render) expect an FHS/glibc layout.
+On NixOS that can break headless browser startup or MP4 encoding, so we run inside Debian.
+
+Why this setup:
+- Stable Chromium + ffmpeg binaries in a standard FHS environment.
+- Consistent preview/render outputs across machines.
+- `out/` stays on the host so renders land locally.
+
+What `npm run startall` does:
+- Prunes unused images and builder cache to avoid stale layers.
+- Runs `docker:preview:live` for a clean, live-edit preview.
+
+How the container is wired:
+- `Dockerfile` installs Chromium libs, uses `dumb-init`, and prefetches headless-shell.
+- `docker:preview:live` mounts the repo + `out/` for live edits and host renders.
+- `docker:render` uses the same image for consistent MP4 output.
 
 ```console
 # Build the image (cached, re-run when dependencies change)
