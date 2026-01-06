@@ -1,5 +1,15 @@
+/*
+ * Layout checklist:
+ * - 3440x1440 scale: +20-30% sizes
+ * - No overlaps; keep safe margins
+ * - Labels readable on mobile
+ * - Tags/lines sit below icon baselines
+ * - Recenter remaining element after fades
+ * - Keep the sun bright; avoid heavy scrims
+ */
+
 import type { ReactNode } from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { VaporwaveBackground } from "../../VaporwaveBackground";
 import { GlassCard } from "../../components/GlassCard";
 import { SceneProgressBar } from "../../components/SceneProgressBar";
@@ -205,7 +215,7 @@ export const MODULES_SCENE_DURATION = SEGMENT_FRAMES.reduce(
 
 export const ModulesScene = () => {
   const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
+  const { durationInFrames, fps } = useVideoConfig();
 
   if (durationInFrames !== MODULES_SCENE_DURATION) {
     console.warn("ModulesScene expected duration:", MODULES_SCENE_DURATION);
@@ -226,6 +236,14 @@ export const ModulesScene = () => {
     0,
   );
   const entries = [...modules, "outro"];
+  const segmentStarts = SEGMENT_FRAMES.reduce<number[]>((acc, _, idx) => {
+    if (idx === 0) {
+      acc.push(0);
+      return acc;
+    }
+    acc.push(acc[idx - 1] + SEGMENT_FRAMES[idx - 1]);
+    return acc;
+  }, []);
   const slideWidth = 36;
   const gap = 6;
   const progress = Math.min(
@@ -234,6 +252,20 @@ export const ModulesScene = () => {
   );
   const offsetPercent =
     (Math.min(index, entries.length - 1) + progress) * (slideWidth + gap);
+  const caretOpacity = interpolate(Math.sin(frame / 6), [-1, 1], [0.2, 1]);
+  const typeDuration = Math.round(fps * 1.2);
+  const getTypedText = (text: string, localFrame: number) => {
+    const count = Math.max(
+      0,
+      Math.floor(
+        interpolate(localFrame, [0, typeDuration], [0, text.length], {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
+        }),
+      ),
+    );
+    return text.slice(0, count);
+  };
 
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
@@ -262,8 +294,15 @@ export const ModulesScene = () => {
               paddingLeft: "18%",
             }}
           >
-            {entries.map((entry) => {
+            {entries.map((entry, entryIndex) => {
               const isOutroCard = entry === "outro";
+              const entryStart = segmentStarts[entryIndex] ?? 0;
+              const entryFrame = frame - entryStart;
+              const isActive = entryIndex === index;
+              const titleText = isOutroCard ? "Why user modules?" : (entry as ModuleDetail).name;
+              const typedTitle = isActive ? getTypedText(titleText, entryFrame) : titleText;
+              const titleGradient =
+                "linear-gradient(100deg, #f7f4ff 10%, #7fe8ff 40%, #ff9f4a 70%, #f7f4ff 90%)";
               return (
                 <div
                   key={isOutroCard ? "outro" : (entry as ModuleDetail).name}
@@ -288,11 +327,27 @@ export const ModulesScene = () => {
                         style={{
                           fontSize: "clamp(48px, 4vw, 82px)",
                           fontWeight: 700,
-                          color: "#ffe7ff",
                           letterSpacing: 2,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          lineHeight: 1,
+                          whiteSpace: "nowrap",
                         }}
                       >
-                        Why user modules?
+                        <span
+                          style={{
+                            background: titleGradient,
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            textShadow: "0 18px 50px rgba(0,0,0,0.55)",
+                          }}
+                        >
+                          {typedTitle}
+                        </span>
+                        {isActive ? (
+                          <span style={{ color: "#f7f4ff", opacity: caretOpacity }}>|</span>
+                        ) : null}
                       </div>
                       <div
                         style={{
@@ -391,11 +446,27 @@ export const ModulesScene = () => {
                         style={{
                           fontSize: "clamp(60px, 5vw, 104px)",
                           fontWeight: 700,
-                          color: "#ffe7ff",
                           letterSpacing: 2,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          lineHeight: 1,
+                          whiteSpace: "nowrap",
                         }}
                       >
-                        {(entry as ModuleDetail).name}
+                        <span
+                          style={{
+                            background: titleGradient,
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            textShadow: "0 18px 50px rgba(0,0,0,0.55)",
+                          }}
+                        >
+                          {typedTitle}
+                        </span>
+                        {isActive ? (
+                          <span style={{ color: "#f7f4ff", opacity: caretOpacity }}>|</span>
+                        ) : null}
                       </div>
                       <div
                         style={{

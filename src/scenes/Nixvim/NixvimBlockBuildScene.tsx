@@ -1,3 +1,13 @@
+/*
+ * Layout checklist:
+ * - 3440x1440 scale: +20-30% sizes
+ * - No overlaps; keep safe margins
+ * - Labels readable on mobile
+ * - Tags/lines sit below icon baselines
+ * - Recenter remaining element after fades
+ * - Keep the sun bright; avoid heavy scrims
+ */
+
 import React, { useMemo } from "react";
 import { AbsoluteFill, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { ThreeCanvas } from "@remotion/three";

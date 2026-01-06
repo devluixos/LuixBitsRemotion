@@ -9,6 +9,8 @@ export type TerminalLine = {
   startFrame: number;
   mode: LineMode;
   speed?: number;
+  color?: string;
+  glow?: string;
 };
 
 type TerminalProps = {
@@ -120,7 +122,13 @@ const Line: React.FC<{
       >
         {line.prompt}
       </span>
-      <span style={{ whiteSpace: "pre" }}>
+      <span
+        style={{
+          whiteSpace: "pre",
+          color: line.color ?? "#f8e9ff",
+          textShadow: line.glow ? `0 0 18px ${line.glow}` : undefined,
+        }}
+      >
         {content}
         <Cursor
           height={fontSize * 0.7}
