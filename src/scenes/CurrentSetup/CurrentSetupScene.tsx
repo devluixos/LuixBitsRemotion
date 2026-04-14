@@ -10,9 +10,9 @@
 
 import {
   AbsoluteFill,
+  Html5Video,
   getStaticFiles,
   interpolate,
-  OffthreadVideo,
   spring,
   useCurrentFrame,
   useVideoConfig,
@@ -581,9 +581,11 @@ const FootagePanel: React.FC<{
           }}
         >
           {src ? (
-            <OffthreadVideo
+            <Html5Video
               src={src}
+               loop
               muted
+              playsInline
               delayRenderTimeoutInMilliseconds={120000}
               style={{
                 width: "100%",
