@@ -6,12 +6,23 @@
  */
 
 import fs from "node:fs";
+import path from "node:path";
 import { Config } from "@remotion/cli/config";
 import { enableTailwind } from "@remotion/tailwind-v4";
 
 Config.setVideoImageFormat("jpeg");
 Config.setOverwriteOutput(true);
-Config.overrideWebpackConfig(enableTailwind);
+Config.overrideWebpackConfig((currentConfiguration) => {
+  const withTailwind = enableTailwind(currentConfiguration);
+
+  return {
+    ...withTailwind,
+    cache: {
+      type: "filesystem",
+      cacheDirectory: path.join(process.cwd(), ".remotion-webpack-cache"),
+    },
+  };
+});
 
 const chromiumCandidates = [
   process.env.REMOTION_CHROMIUM_EXECUTABLE,
